@@ -1,0 +1,38 @@
+@import url('assets/styles/definições.css');
+
+
+body {
+  background-color: var(--cor-fundo) !important; 
+  font-family: "League Spartan", sans-serif !important;
+  color: var(--cor-primaria)!important;
+}
+
+button:hover {
+  background-color: var(--cor-primaria); 
+}
+.sidebar{
+  background-color: var(--cor-terciaria) !important;
+}
+.link-container a {
+  display: block;
+  text-decoration: none;
+  color: var(--cor-primaria)!important;
+  
+}
+.header-projeto{
+  background-color: var(--cor-secundaria) !important;
+  border-radius: 10px;
+}
+.aside-infos{
+  background-color: var(--cor-secundaria) !important;
+}
+.container-apresentacao{
+  background-color: var(--cor-terciaria) !important;
+  border-radius: 10px;
+  background-color: var(--cor-secundaria) !important;
+
+}
+footer{
+  background-color: var(--cor-terciaria) !important;
+  color: var(--cor-fundo)!important;
+}
