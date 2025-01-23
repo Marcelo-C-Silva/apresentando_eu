@@ -1,3 +1,7 @@
+@font-face {
+  font-family: 'logo';
+  src: url('../fontes/blox-brk.regular.ttf') format('truetype');
+}
 :root {
   --cor-primaria: #d9d7ef;
   --cor-secundaria: #57449a;
