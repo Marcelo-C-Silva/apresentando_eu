@@ -30,7 +30,11 @@ h2{
 .btn-outline-primary {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.title-bar .title {
 
+	font-size: 1.3rem !important;
+	
+}
 
 .tag-icons {
   max-width: 45px; /* Limite de largura máxima */
