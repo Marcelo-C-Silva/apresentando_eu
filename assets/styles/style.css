@@ -4,6 +4,11 @@
 body {
   background-color: var(--cor-terciaria) !important; 
 }
+header h1{
+  color: aliceblue;
+  font-family: 'logo', sans-serif !important;
+  font-size: 3.5rem;
+}
 .img-header{
   max-width: 400px; /* Limite de largura máxima */
   max-height: 400px;
@@ -45,4 +50,5 @@ h2{
 .footer-projeto{
   background-color: var(--cor-terciaria) !important;
   color: var(--cor-fundo)!important;
+ 
 }
