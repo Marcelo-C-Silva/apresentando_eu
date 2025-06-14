@@ -22,11 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     modalTitle.textContent = title;
     modalBody.textContent = description;
     projectLink.href = link;
-
-    // Limpa o container de imagens
+    projectLink.target = "_blank";
+    projectLink.rel = "noopener noreferrer";
     modalImagesContainer.innerHTML = '';
 
-    // Adiciona cada imagem
     if (images) {
       images.forEach(imageName => {
         if (imageName) {
