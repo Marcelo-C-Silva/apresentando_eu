@@ -1,52 +1,70 @@
-# 🌐 Meu Portfólio
+# Meu Portfólio
 
-Este é meu portfólio pessoal desenvolvido com **HTML**, **CSS** e **JavaScript**, utilizando o framework [System.css](https://github.com/sakofchit/system.css) para um visual retrô inspirado na interface clássica dos sistemas operacionais dos anos 80 e 90.
+Portfólio pessoal desenvolvido com **React**, **Vite** e **System.css**, inspirado na interface clássica dos computadores Macintosh.
 
-## 🎯 Objetivo
+## Objetivo
 
-Apresentar meus projetos, habilidades e informações de contato de forma criativa, com uma interface nostálgica e responsiva.
+Apresentar projetos, habilidades, currículo e formas de contato em uma experiência visual parecida com uma área de trabalho antiga, com janelas independentes e interface retrô.
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias
 
-- HTML5
-- CSS3
-- JavaScript
-- [System.css](https://github.com/sakofchit/system.css) – Estilização inspirada nos antigos sistemas da Apple
+- React
+- Vite
+- System.css
+- react-rnd
+- CSS modularizado por componentes visuais
 
-## 🚀 Como Executar
+## Como executar
 
-1. Clone este repositório:
+1. Instale as dependências:
+
    ```bash
-   git clone https://github.com/Marcelo-C-Silva/apresentando_eu.git
+   npm install
    ```
 
-2. Acesse a pasta do projeto:
+2. Rode o servidor local:
+
    ```bash
-   cd apresentando_eu
+   npm run dev
    ```
 
-3. Abra o arquivo `index.html` no seu navegador preferido.
+3. Abra a URL exibida no terminal. Normalmente:
 
-   > 💡 Dica: Você pode usar uma extensão como "Live Server" no VS Code para uma visualização dinâmica.
+   ```txt
+   http://localhost:5173/
+   ```
 
-## 📸 Preview
+## Scripts
 
-<p align="center">
-  <img src="https://media.discordapp.net/attachments/874387729440444427/1383483733566296186/image.png?ex=684ef521&is=684da3a1&hm=b2ae6e776e206080a895b1282e9fd587364e1aae2009940d67bcbd7905d827fe&=&format=webp&quality=lossless&width=647&height=1005" alt="Preview do Portfólio" width="300">
-</p>
+```bash
+npm run dev
+npm run build
+npm run preview
+```
 
+## Estrutura principal
 
-## ✨ Funcionalidades
+```txt
+src/
+  components/
+  data/
+  styles/
+  utils/
 
-- Layout responsivo com estilo retrô
-- Seção de projetos
-- Informações sobre mim
-- Links para redes sociais
-- Interface simples, criativa e funcional
+public/
+  assets/
+```
 
+## Funcionalidades
 
-## 🙋‍♂️ Autor
+- Interface inspirada em Macintosh clássico
+- Menu superior estilo sistema operacional
+- Ícones na área de trabalho
+- Janelas arrastáveis e redimensionáveis no desktop
+- Janelas empilhadas em telas menores
+- Projetos carregados a partir de dados estruturados
+- Currículo disponível para download
 
-Desenvolvido por [Marcelo Carneiro](https://github.com/Marcelo-C-Silva)
+## Autor
 
-Fique à vontade para entrar em contato comigo por e-mail, LinkedIn ou outras redes sociais disponíveis no portfólio.
+Desenvolvido por [Marcelo Carneiro](https://github.com/Marcelo-C-Silva).

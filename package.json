@@ -1,0 +1,21 @@
+{
+  "name": "apresentando-eu",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@sakun/system.css": "^0.1.11",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-rnd": "^10.5.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.3.0"
+  }
+}
