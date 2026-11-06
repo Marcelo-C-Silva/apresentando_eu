@@ -3,14 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>João Marcelo | Desenvolvedor Full Stack</title>
     <meta
       name="description"
-      content="Portfólio de Joao Marcelo em React, inspirado na interface clássica Macintosh."
+      content="Portfólio de João Marcelo, desenvolvedor full stack em Fortaleza, com experiência em C#, .NET, Blazor, Ruby on Rails e Angular."
     />
-    <title>Joao Marcelo | Portfólio</title>
+    <meta name="theme-color" content="#111111" />
+    <link rel="canonical" href="https://marcelo-c-silva.github.io/apresentando_eu/" />
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="João Marcelo | Desenvolvedor Full Stack" />
+    <meta
+      property="og:description"
+      content="Experiência em C#, .NET, Blazor, Ruby on Rails e Angular. Veja projetos, tecnologias e currículo."
+    />
+    <meta property="og:url" content="https://marcelo-c-silva.github.io/apresentando_eu/" />
+    <meta property="og:image" content="https://marcelo-c-silva.github.io/apresentando_eu/assets/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "João Marcelo Carneiro da Silva",
+        "jobTitle": "Desenvolvedor Full Stack",
+        "url": "https://marcelo-c-silva.github.io/apresentando_eu/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Fortaleza",
+          "addressRegion": "CE",
+          "addressCountry": "BR"
+        },
+        "sameAs": ["https://github.com/Marcelo-C-Silva"]
+      }
+    </script>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <style>
+      .js #static-content {
+        visibility: hidden;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Conteúdo para buscadores e para quem navega sem JavaScript. O React o substitui ao iniciar. -->
+      <main id="static-content">
+        <h1>João Marcelo Carneiro da Silva</h1>
+        <p>Desenvolvedor Full Stack em Fortaleza, CE, com experiência em C#, .NET, Blazor, Ruby on Rails e Angular.</p>
+        <h2>Experiência</h2>
+        <ul>
+          <li>Desenvolvedor Full Stack – C# / Blazor, Unichristus (2026 – atual)</li>
+          <li>Estágio em Desenvolvimento Full Stack, SEFIN – Secretaria de Finanças de Fortaleza (2024 – 2026)</li>
+        </ul>
+        <h2>Links</h2>
+        <ul>
+          <li><a href="https://github.com/Marcelo-C-Silva">GitHub</a></li>
+          <li><a href="mailto:carneiromarcelodev@gmail.com">carneiromarcelodev@gmail.com</a></li>
+          <li><a href="assets/docs/Curriculo_Joao_Marcelo.pdf">Currículo em PDF</a></li>
+        </ul>
+      </main>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

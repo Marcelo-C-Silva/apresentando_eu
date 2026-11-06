@@ -1,56 +1,62 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MenuBar } from './components/MenuBar.jsx';
 import { DesktopIcon } from './components/DesktopIcon.jsx';
 import { RetroWindow } from './components/RetroWindow.jsx';
 import { ProfileWindow } from './components/ProfileWindow.jsx';
+import { ExperienceWindow } from './components/ExperienceWindow.jsx';
 import { TechnologiesWindow } from './components/TechnologiesWindow.jsx';
 import { ProjectsWindow } from './components/ProjectsWindow.jsx';
 import { ProjectDetailWindow } from './components/ProjectDetailWindow.jsx';
 import { ContactWindow } from './components/ContactWindow.jsx';
-import { ResumeWindow } from './components/ResumeWindow.jsx';
+import { profile } from './data/portfolio.js';
+import { assetPath } from './utils/assets.js';
+
+const COMPACT_QUERY = '(max-width: 760px)';
+const ICON_GUTTER = 140;
+const WINDOW_MARGIN = 12;
+const MIN_WINDOW_WIDTH = 280;
 
 const windowDefinitions = {
   profile: {
-    title: 'Sobre Joao Marcelo',
-    icon: 'desktop/about-retro.png',
-    label: 'Sobre Mim',
-    defaultGeometry: { x: 150, y: 104, width: 720, height: 475 },
+    title: `Sobre ${profile.displayName}`,
+    defaultGeometry: { x: 150, y: 70, width: 720, height: 500 },
     defaultOpen: true,
+  },
+  experience: {
+    title: 'Experiência',
+    defaultGeometry: { x: 300, y: 40, width: 640, height: 580 },
+    defaultOpen: false,
   },
   technologies: {
     title: 'Tecnologias',
-    icon: 'desktop/technologies-retro.png',
-    label: 'Tecnologias',
-    defaultGeometry: { x: 180, y: 370, width: 520, height: 430 },
+    defaultGeometry: { x: 180, y: 90, width: 560, height: 600 },
     defaultOpen: false,
   },
   projects: {
     title: 'Projetos',
-    icon: 'desktop/projects-retro.png',
-    label: 'Projetos',
-    defaultGeometry: { x: 700, y: 310, width: 650, height: 500 },
+    defaultGeometry: { x: 620, y: 60, width: 680, height: 600 },
     defaultOpen: false,
   },
   contact: {
     title: 'Contato',
-    icon: 'desktop/contact-retro.png',
-    label: 'Contato',
     defaultGeometry: { x: 820, y: 160, width: 380, height: 245 },
-    defaultOpen: false,
-  },
-  resume: {
-    title: 'Currículo',
-    icon: 'desktop/resume-retro.png',
-    label: 'Currículo.pdf',
-    defaultGeometry: { x: 500, y: 230, width: 360, height: 210 },
     defaultOpen: false,
   },
   projectDetail: {
     title: 'Detalhes do Projeto',
-    defaultGeometry: { x: 500, y: 220, width: 470, height: 300 },
+    defaultGeometry: { x: 400, y: 50, width: 540, height: 620 },
     defaultOpen: false,
   },
 };
+
+const desktopIcons = [
+  { id: 'profile', icon: 'desktop/about-retro.png', label: 'Sobre Mim' },
+  { id: 'experience', icon: 'desktop/skills-retro.png', label: 'Experiência' },
+  { id: 'projects', icon: 'desktop/projects-retro.png', label: 'Projetos' },
+  { id: 'technologies', icon: 'desktop/technologies-retro.png', label: 'Tecnologias' },
+  { id: 'resume', icon: 'desktop/resume-retro.png', label: 'Currículo.pdf', download: profile.resume },
+  { id: 'contact', icon: 'desktop/contact-retro.png', label: 'Contato' },
+];
 
 function createInitialWindows() {
   return Object.fromEntries(
@@ -60,14 +66,49 @@ function createInitialWindows() {
         ...definition.defaultGeometry,
         open: definition.defaultOpen,
         minimized: false,
+        maximized: false,
+        custom: false,
+        focusToken: 0,
         zIndex: 10 + index,
       },
     ]),
   );
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(value, max));
+}
+
+// Calculada a cada render para que as janelas sempre caibam na área de trabalho,
+// sem perder a posição original quando a tela volta a crescer.
+function fitToDesktop(state, desktop) {
+  if (state.maximized) return { x: 0, y: 0, width: desktop.width, height: desktop.height };
+
+  const margin = state.custom ? 0 : WINDOW_MARGIN;
+  const left = state.custom ? 0 : ICON_GUTTER;
+  const width = Math.min(state.width, Math.max(desktop.width - left - margin, MIN_WINDOW_WIDTH), desktop.width);
+  const height = Math.min(state.height, desktop.height - margin * 2);
+
+  return {
+    x: clamp(state.x, Math.min(left, desktop.width - width), Math.max(desktop.width - width - margin, 0)),
+    y: clamp(state.y, margin, Math.max(desktop.height - height - margin, margin)),
+    width,
+    height,
+  };
+}
+
+function getTopWindow(windows) {
+  const visible = Object.entries(windows).filter(([, state]) => state.open && !state.minimized);
+  if (visible.length === 0) return null;
+  return visible.reduce((top, entry) => (entry[1].zIndex > top[1].zIndex ? entry : top))[0];
+}
+
+function getNextZ(windows) {
+  return Math.max(...Object.values(windows).map((state) => state.zIndex)) + 1;
+}
+
 function useMediaQuery(query) {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(query);
@@ -82,61 +123,70 @@ function useMediaQuery(query) {
   return matches;
 }
 
+function useElementSize(ref) {
+  const [size, setSize] = useState(null);
+
+  useLayoutEffect(() => {
+    const element = ref.current;
+    const measure = () => setSize({ width: element.clientWidth, height: element.clientHeight });
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return size;
+}
+
 export default function App() {
-  const compact = useMediaQuery('(max-width: 760px)');
+  const compact = useMediaQuery(COMPACT_QUERY);
+  const desktopRef = useRef(null);
+  const desktopSize = useElementSize(desktopRef);
   const [windows, setWindows] = useState(createInitialWindows);
-  const [activeWindow, setActiveWindow] = useState('profile');
-  const [topZ, setTopZ] = useState(30);
   const [selectedProject, setSelectedProject] = useState(null);
-  const desktopIconOrder = ['profile', 'technologies', 'projects', 'resume', 'contact'];
+  const returnFocusTo = useRef({});
+  const pendingFocus = useRef(null);
 
-  const desktopIcons = useMemo(
-    () =>
-      desktopIconOrder.map((id) => {
-        const definition = windowDefinitions[id];
-
-        return {
-          id,
-          icon: definition.icon,
-          label: definition.label,
-        };
-      }),
-    [],
-  );
+  const topWindow = getTopWindow(windows);
 
   function updateWindow(id, changes) {
     setWindows((current) => ({
       ...current,
-      [id]: {
-        ...current[id],
-        ...changes,
-      },
+      [id]: { ...current[id], ...changes },
     }));
   }
 
   function bringToFront(id) {
-    setTopZ((current) => {
-      const nextZ = current + 1;
-      updateWindow(id, { zIndex: nextZ });
-      return nextZ;
-    });
-    setActiveWindow(id);
+    setWindows((current) =>
+      getTopWindow(current) === id
+        ? current
+        : { ...current, [id]: { ...current[id], zIndex: getNextZ(current) } },
+    );
   }
 
   function openWindow(id) {
-    setTopZ((current) => {
-      const nextZ = current + 1;
-      updateWindow(id, { open: true, minimized: false, zIndex: nextZ });
-      return nextZ;
-    });
-    setActiveWindow(id);
+    returnFocusTo.current[id] = document.activeElement;
+    setWindows((current) => ({
+      ...current,
+      [id]: {
+        ...current[id],
+        open: true,
+        minimized: false,
+        zIndex: getNextZ(current),
+        focusToken: current[id].focusToken + 1,
+      },
+    }));
   }
 
   function closeWindow(id) {
-    updateWindow(id, { open: false, minimized: false });
+    pendingFocus.current = returnFocusTo.current[id];
+    updateWindow(id, { open: false, minimized: false, maximized: false });
   }
 
   function minimizeWindow(id) {
+    pendingFocus.current = returnFocusTo.current[id];
     updateWindow(id, { minimized: true });
   }
 
@@ -145,12 +195,30 @@ export default function App() {
     openWindow('projectDetail');
   }
 
+  // Devolve o foco ao elemento que abriu a janela, depois que ela sai da tela.
+  useEffect(() => {
+    const element = pendingFocus.current;
+    pendingFocus.current = null;
+    if (element?.isConnected) element.focus({ preventScroll: true });
+  }, [windows]);
+
+  useEffect(() => {
+    if (!topWindow) return undefined;
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') closeWindow(topWindow);
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [topWindow]);
+
   function renderWindow(id) {
     if (id === 'profile') return <ProfileWindow onClose={() => closeWindow('profile')} />;
+    if (id === 'experience') return <ExperienceWindow />;
     if (id === 'technologies') return <TechnologiesWindow />;
     if (id === 'projects') return <ProjectsWindow onSelectProject={selectProject} />;
     if (id === 'contact') return <ContactWindow />;
-    if (id === 'resume') return <ResumeWindow />;
     if (id === 'projectDetail') return <ProjectDetailWindow project={selectedProject} />;
     return null;
   }
@@ -160,47 +228,53 @@ export default function App() {
   return (
     <div className="portfolio-os">
       <MenuBar onOpen={openWindow} />
-      <main className="desktop" aria-label="Área de trabalho do portfólio">
-        <div className="desktop-icons" aria-label="Atalhos">
+      <main className="desktop" ref={desktopRef} aria-label="Área de trabalho do portfólio">
+        <div className="desktop-icons" aria-label="Atalhos" inert={compact && topWindow !== null}>
           {desktopIcons.map((item) => (
             <DesktopIcon
               key={item.id}
               icon={item.icon}
               label={item.label}
+              downloadHref={item.download && assetPath(item.download)}
               onOpen={() => openWindow(item.id)}
             />
           ))}
         </div>
 
-        <div className="windows-layer">
-          {Object.entries(windowDefinitions).map(([id, definition]) => {
-            const state = windows[id];
+        {desktopSize && (
+          <div className="windows-layer">
+            {Object.entries(windowDefinitions).map(([id, definition]) => {
+              const state = windows[id];
 
-            if (!state.open || state.minimized) return null;
+              if (!state.open || state.minimized) return null;
 
-            return (
-              <RetroWindow
-                key={id}
-                id={id}
-                title={id === 'projectDetail' && selectedProject ? selectedProject.title : definition.title}
-                geometry={state}
-                zIndex={state.zIndex}
-                active={activeWindow === id}
-                compact={compact}
-                onFocus={() => bringToFront(id)}
-                onClose={() => closeWindow(id)}
-                onMinimize={() => minimizeWindow(id)}
-                onDragStop={(x, y) => updateWindow(id, { x, y })}
-                onResizeStop={(width, height, x, y) => updateWindow(id, { width, height, x, y })}
-              >
-                {renderWindow(id)}
-              </RetroWindow>
-            );
-          })}
-        </div>
+              return (
+                <RetroWindow
+                  key={id}
+                  id={id}
+                  title={id === 'projectDetail' && selectedProject ? selectedProject.title : definition.title}
+                  geometry={fitToDesktop(state, desktopSize)}
+                  zIndex={state.zIndex}
+                  active={topWindow === id}
+                  compact={compact}
+                  maximized={state.maximized}
+                  focusToken={state.focusToken}
+                  onFocus={() => bringToFront(id)}
+                  onClose={() => closeWindow(id)}
+                  onMinimize={() => minimizeWindow(id)}
+                  onToggleMaximize={() => updateWindow(id, { maximized: !state.maximized })}
+                  onDragStop={(x, y) => updateWindow(id, { x, y, custom: true })}
+                  onResizeStop={(width, height, x, y) => updateWindow(id, { width, height, x, y, custom: true })}
+                >
+                  {renderWindow(id)}
+                </RetroWindow>
+              );
+            })}
+          </div>
+        )}
       </main>
 
-      {minimizedWindows.length > 0 && (
+      {!compact && minimizedWindows.length > 0 && (
         <footer className="dock" aria-label="Janelas minimizadas">
           {minimizedWindows.map(([id]) => (
             <button className="dock__item" type="button" key={id} onClick={() => openWindow(id)}>

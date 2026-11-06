@@ -4,7 +4,7 @@ Portfólio pessoal desenvolvido com **React**, **Vite** e **System.css**, inspir
 
 ## Objetivo
 
-Apresentar projetos, habilidades, currículo e formas de contato em uma experiência visual parecida com uma área de trabalho antiga, com janelas independentes e interface retrô.
+Apresentar experiência, projetos, habilidades, currículo e formas de contato em uma experiência visual parecida com uma área de trabalho antiga, com janelas independentes e interface retrô.
 
 ## Tecnologias
 
@@ -12,7 +12,6 @@ Apresentar projetos, habilidades, currículo e formas de contato em uma experiê
 - Vite
 - System.css
 - react-rnd
-- CSS modularizado por componentes visuais
 
 ## Como executar
 
@@ -60,11 +59,13 @@ public/
 - Interface inspirada em Macintosh clássico
 - Menu superior estilo sistema operacional
 - Ícones na área de trabalho
-- Janelas arrastáveis e redimensionáveis no desktop
-- Janelas empilhadas em telas menores
+- Janelas arrastáveis, redimensionáveis e maximizáveis no desktop, sempre ajustadas ao tamanho da tela
+- Uma janela por vez, em tela cheia, no mobile
+- Navegação por teclado (Esc fecha a janela ativa)
 - Projetos carregados a partir de dados estruturados
 - Currículo disponível para download
+- Metadados para buscadores e compartilhamento (Open Graph)
 
 ## Autor
 
-Desenvolvido por [Marcelo Carneiro](https://github.com/Marcelo-C-Silva).
+Desenvolvido por [João Marcelo Carneiro da Silva](https://github.com/Marcelo-C-Silva).

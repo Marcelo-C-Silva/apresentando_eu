@@ -7,15 +7,28 @@ export function ProjectDetailWindow({ project }) {
 
   return (
     <div className="project-detail">
+      <img className="project-detail__image" src={assetPath(project.image)} alt={`Imagem do projeto ${project.title}`} />
+      {project.context && <p className="project-detail__context">{project.context}</p>}
       <p>{project.description}</p>
-      <div className="project-detail__icons" aria-label="Tecnologias usadas">
-        {project.icons.map((icon) => (
-          <img key={icon} src={assetPath(icon)} alt="" aria-hidden="true" />
+
+      <ul className="project-detail__technologies" aria-label="Tecnologias usadas">
+        {project.technologies.map((item) => (
+          <li key={item.name}>
+            <img src={assetPath(item.icon)} alt="" aria-hidden="true" />
+            {item.name}
+          </li>
         ))}
-      </div>
-      <a className="btn retro-link" href={project.link} target="_blank" rel="noreferrer">
-        Acessar Projeto
-      </a>
+      </ul>
+
+      {project.links.length > 0 && (
+        <div className="project-detail__links">
+          {project.links.map((link) => (
+            <a className="btn retro-link" href={link.href} target="_blank" rel="noreferrer" key={link.href}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

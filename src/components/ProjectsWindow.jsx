@@ -6,11 +6,16 @@ export function ProjectsWindow({ onSelectProject }) {
     <div className="project-grid">
       {projects.map((project) => (
         <article className="project-tile" key={project.id}>
-          <img src={assetPath(project.image)} alt="" className="project-tile__image" />
+          <img src={assetPath(project.image)} alt="" className="project-tile__image" loading="lazy" />
           <div className="project-tile__body">
             <h3>{project.title}</h3>
             <p>{project.summary}</p>
-            <button className="btn" type="button" onClick={() => onSelectProject(project)}>
+            <button
+              className="btn"
+              type="button"
+              aria-label={`Ver mais sobre ${project.title}`}
+              onClick={() => onSelectProject(project)}
+            >
               Ver mais
             </button>
           </div>

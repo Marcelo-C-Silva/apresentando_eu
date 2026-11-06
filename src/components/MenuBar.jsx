@@ -1,14 +1,23 @@
-export function MenuBar({ onOpen }) {
-  const menuItems = [
-    ['Sobre', 'profile'],
-    ['Projetos', 'projects'],
-    ['Tecnologias', 'technologies'],
-    ['Contato', 'contact'],
-  ];
+import { profile } from '../data/portfolio.js';
 
+const menuItems = [
+  ['Sobre', 'profile'],
+  ['Experiência', 'experience'],
+  ['Projetos', 'projects'],
+  ['Tecnologias', 'technologies'],
+  ['Contato', 'contact'],
+];
+
+export function MenuBar({ onOpen }) {
   return (
     <header className="menu-bar" aria-label="Barra de menu">
-      <button className="menu-brand" type="button" onClick={() => onOpen('profile')}>
+      {/* A fonte do logo não tem o caractere "ã", por isso o texto visível fica sem acento. */}
+      <button
+        className="menu-brand"
+        type="button"
+        aria-label={profile.displayName}
+        onClick={() => onOpen('profile')}
+      >
         Joao Marcelo
       </button>
       <nav className="menu-navigation" aria-label="Janelas do portfólio">

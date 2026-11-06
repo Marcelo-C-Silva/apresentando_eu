@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" role="img" aria-label="Fluxo de automação: pré-matrícula, triagem no Make e registro no Pipefy">
+  <rect width="640" height="340" fill="#fff"/>
+  <g fill="none" stroke="#111" stroke-width="4">
+    <rect x="30" y="120" width="160" height="100"/>
+    <rect x="240" y="120" width="160" height="100"/>
+    <rect x="450" y="120" width="160" height="100"/>
+    <path d="M190 170h44M400 170h44"/>
+  </g>
+  <path d="M234 160l14 10-14 10zM444 160l14 10-14 10z" fill="#111"/>
+  <g font-family="Menlo, Consolas, monospace" font-size="22" font-weight="700" text-anchor="middle" fill="#111">
+    <text x="110" y="166">Pré-</text><text x="110" y="192">matrícula</text>
+    <text x="320" y="166">Make</text><text x="320" y="192">triagem</text>
+    <text x="530" y="166">Pipefy</text><text x="530" y="192">GraphQL</text>
+    <text x="320" y="70" font-size="26">Automação de pré-matrículas</text>
+  </g>
+</svg>
