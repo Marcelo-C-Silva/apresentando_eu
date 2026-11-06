@@ -8,7 +8,7 @@ import { TechnologiesWindow } from './components/TechnologiesWindow.jsx';
 import { ProjectsWindow } from './components/ProjectsWindow.jsx';
 import { ProjectDetailWindow } from './components/ProjectDetailWindow.jsx';
 import { ContactWindow } from './components/ContactWindow.jsx';
-import { MusicWindow } from './components/MusicWindow.jsx';
+import { CdDefs, MusicBar, MusicWindow } from './components/MusicWindow.jsx';
 import { tracks } from './data/music.js';
 import { profile } from './data/portfolio.js';
 import { useMusicPlayer } from './hooks/useMusicPlayer.js';
@@ -23,9 +23,8 @@ const windowDefinitions = {
   // Fica primeiro para abrir atrás das demais janelas quando a tela for estreita.
   music: {
     title: 'Player',
-    defaultGeometry: { x: 900, y: 70, width: 320, height: 200 },
+    defaultGeometry: { x: 900, y: 70, width: 320, height: 212 },
     defaultOpen: true,
-    compactDefaultOpen: false,
   },
   profile: {
     title: `Sobre ${profile.displayName}`,
@@ -69,13 +68,13 @@ const desktopIcons = [
   { id: 'music', icon: 'desktop/music-retro.png', label: 'Player' },
 ];
 
-function createInitialWindows(compact) {
+function createInitialWindows() {
   return Object.fromEntries(
     Object.entries(windowDefinitions).map(([id, definition], index) => [
       id,
       {
         ...definition.defaultGeometry,
-        open: compact ? (definition.compactDefaultOpen ?? definition.defaultOpen) : definition.defaultOpen,
+        open: definition.defaultOpen,
         minimized: false,
         maximized: false,
         custom: false,
@@ -108,8 +107,11 @@ function fitToDesktop(state, desktop) {
   };
 }
 
-function getTopWindow(windows) {
-  const visible = Object.entries(windows).filter(([, state]) => state.open && !state.minimized);
+// No mobile o player vira uma barra fixa, então não concorre com as janelas.
+function getTopWindow(windows, compact) {
+  const visible = Object.entries(windows).filter(
+    ([id, state]) => state.open && !state.minimized && !(compact && id === 'music'),
+  );
   if (visible.length === 0) return null;
   return visible.reduce((top, entry) => (entry[1].zIndex > top[1].zIndex ? entry : top))[0];
 }
@@ -155,13 +157,14 @@ export default function App() {
   const compact = useMediaQuery(COMPACT_QUERY);
   const desktopRef = useRef(null);
   const desktopSize = useElementSize(desktopRef);
-  const [windows, setWindows] = useState(() => createInitialWindows(window.matchMedia(COMPACT_QUERY).matches));
+  const [windows, setWindows] = useState(createInitialWindows);
+  const [musicExpanded, setMusicExpanded] = useState(false);
   const music = useMusicPlayer(tracks);
   const [selectedProject, setSelectedProject] = useState(null);
   const returnFocusTo = useRef({});
   const pendingFocus = useRef(null);
 
-  const topWindow = getTopWindow(windows);
+  const topWindow = getTopWindow(windows, compact);
 
   function updateWindow(id, changes) {
     setWindows((current) => ({
@@ -172,13 +175,14 @@ export default function App() {
 
   function bringToFront(id) {
     setWindows((current) =>
-      getTopWindow(current) === id
+      getTopWindow(current, compact) === id
         ? current
         : { ...current, [id]: { ...current[id], zIndex: getNextZ(current) } },
     );
   }
 
   function openWindow(id) {
+    if (id === 'music' && compact) setMusicExpanded(true);
     returnFocusTo.current[id] = document.activeElement;
     setWindows((current) => ({
       ...current,
@@ -193,7 +197,10 @@ export default function App() {
   }
 
   function closeWindow(id) {
-    if (id === 'music') music.stop();
+    if (id === 'music') {
+      music.stop();
+      setMusicExpanded(false);
+    }
     pendingFocus.current = returnFocusTo.current[id];
     updateWindow(id, { open: false, minimized: false, maximized: false });
   }
@@ -243,6 +250,7 @@ export default function App() {
     <div className="portfolio-os">
       <MenuBar onOpen={openWindow} musicPlaying={music.playing} />
       <audio {...music.audioElement} />
+      <CdDefs />
       <main className="desktop" ref={desktopRef} aria-label="Área de trabalho do portfólio">
         <div className="desktop-icons" aria-label="Atalhos" inert={compact && topWindow !== null}>
           {desktopIcons.map((item) => (
@@ -261,7 +269,7 @@ export default function App() {
             {Object.entries(windowDefinitions).map(([id, definition]) => {
               const state = windows[id];
 
-              if (!state.open || state.minimized) return null;
+              if (!state.open || state.minimized || (compact && id === 'music')) return null;
 
               return (
                 <RetroWindow
@@ -288,6 +296,15 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {compact && windows.music.open && (
+        <MusicBar
+          player={music}
+          expanded={musicExpanded}
+          onToggleExpanded={() => setMusicExpanded((current) => !current)}
+          onClose={() => closeWindow('music')}
+        />
+      )}
 
       {!compact && minimizedWindows.length > 0 && (
         <footer className="dock" aria-label="Janelas minimizadas">

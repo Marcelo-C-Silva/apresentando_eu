@@ -119,6 +119,7 @@ export function useMusicPlayer(tracks) {
 
   return {
     track,
+    index,
     playing,
     shuffle,
     time,
