@@ -8,7 +8,10 @@ import { TechnologiesWindow } from './components/TechnologiesWindow.jsx';
 import { ProjectsWindow } from './components/ProjectsWindow.jsx';
 import { ProjectDetailWindow } from './components/ProjectDetailWindow.jsx';
 import { ContactWindow } from './components/ContactWindow.jsx';
+import { MusicWindow } from './components/MusicWindow.jsx';
+import { tracks } from './data/music.js';
 import { profile } from './data/portfolio.js';
+import { useMusicPlayer } from './hooks/useMusicPlayer.js';
 import { assetPath } from './utils/assets.js';
 
 const COMPACT_QUERY = '(max-width: 760px)';
@@ -17,6 +20,13 @@ const WINDOW_MARGIN = 12;
 const MIN_WINDOW_WIDTH = 280;
 
 const windowDefinitions = {
+  // Fica primeiro para abrir atrás das demais janelas quando a tela for estreita.
+  music: {
+    title: 'Player',
+    defaultGeometry: { x: 900, y: 70, width: 320, height: 200 },
+    defaultOpen: true,
+    compactDefaultOpen: false,
+  },
   profile: {
     title: `Sobre ${profile.displayName}`,
     defaultGeometry: { x: 150, y: 70, width: 720, height: 500 },
@@ -56,15 +66,16 @@ const desktopIcons = [
   { id: 'technologies', icon: 'desktop/technologies-retro.png', label: 'Tecnologias' },
   { id: 'resume', icon: 'desktop/resume-retro.png', label: 'Currículo.pdf', download: profile.resume },
   { id: 'contact', icon: 'desktop/contact-retro.png', label: 'Contato' },
+  { id: 'music', icon: 'desktop/music-retro.png', label: 'Player' },
 ];
 
-function createInitialWindows() {
+function createInitialWindows(compact) {
   return Object.fromEntries(
     Object.entries(windowDefinitions).map(([id, definition], index) => [
       id,
       {
         ...definition.defaultGeometry,
-        open: definition.defaultOpen,
+        open: compact ? (definition.compactDefaultOpen ?? definition.defaultOpen) : definition.defaultOpen,
         minimized: false,
         maximized: false,
         custom: false,
@@ -144,7 +155,8 @@ export default function App() {
   const compact = useMediaQuery(COMPACT_QUERY);
   const desktopRef = useRef(null);
   const desktopSize = useElementSize(desktopRef);
-  const [windows, setWindows] = useState(createInitialWindows);
+  const [windows, setWindows] = useState(() => createInitialWindows(window.matchMedia(COMPACT_QUERY).matches));
+  const music = useMusicPlayer(tracks);
   const [selectedProject, setSelectedProject] = useState(null);
   const returnFocusTo = useRef({});
   const pendingFocus = useRef(null);
@@ -181,6 +193,7 @@ export default function App() {
   }
 
   function closeWindow(id) {
+    if (id === 'music') music.stop();
     pendingFocus.current = returnFocusTo.current[id];
     updateWindow(id, { open: false, minimized: false, maximized: false });
   }
@@ -219,6 +232,7 @@ export default function App() {
     if (id === 'technologies') return <TechnologiesWindow />;
     if (id === 'projects') return <ProjectsWindow onSelectProject={selectProject} />;
     if (id === 'contact') return <ContactWindow />;
+    if (id === 'music') return <MusicWindow player={music} />;
     if (id === 'projectDetail') return <ProjectDetailWindow project={selectedProject} />;
     return null;
   }
@@ -227,7 +241,8 @@ export default function App() {
 
   return (
     <div className="portfolio-os">
-      <MenuBar onOpen={openWindow} />
+      <MenuBar onOpen={openWindow} musicPlaying={music.playing} />
+      <audio {...music.audioElement} />
       <main className="desktop" ref={desktopRef} aria-label="Área de trabalho do portfólio">
         <div className="desktop-icons" aria-label="Atalhos" inert={compact && topWindow !== null}>
           {desktopIcons.map((item) => (

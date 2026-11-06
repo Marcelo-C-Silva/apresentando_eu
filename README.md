@@ -63,6 +63,7 @@ public/
 - Uma janela por vez, em tela cheia, no mobile
 - Navegação por teclado (Esc fecha a janela ativa)
 - Projetos carregados a partir de dados estruturados
+- Player de música em janela, com pausa, troca de faixa e modo aleatório
 - Currículo disponível para download
 - Metadados para buscadores e compartilhamento (Open Graph)
 
